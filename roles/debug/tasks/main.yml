@@ -1,0 +1,32 @@
+# - name: debug info
+#   ansible.builtin.debug:
+#     msg: System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}
+
+# - name: Display all variables/facts known for a host
+#   ansible.builtin.debug:
+#     var: hostvars[inventory_hostname]
+#     # verbosity: 4
+
+# - name: print groupvar example
+#   ansible.builtin.debug:
+#     msg:
+#     - pwd2 {{ hostvars[inventory_hostname].postfix_db_pass }}
+
+- name: Get a list of all running containers
+  docker_host_info:
+    containers: True
+  register: docker_info
+
+- name: Stop all running containers
+  docker_container:
+    name: '{{ item.Names[0] | regex_replace("^/", "") }}'
+    state: stopped
+  loop: '{{ docker_info.containers }}'    
+
+- name: Prune everything
+  community.docker.docker_prune:
+    containers: true
+    images: true
+    networks: true
+    volumes: true
+    builder_cache: true

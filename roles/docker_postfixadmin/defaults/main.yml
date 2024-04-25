@@ -1,0 +1,9 @@
+    pfa_container_name: pfa
+    pfa_docker_image: postfixadmin
+    pfa_docker_image_tag: 3.3
+    pfa_custom_image: pfa-dovecot-noxp
+    pfa_db_type: mysqli
+    #pw is: hK2jBgsyR2pmBsj26ER
+    pfa_setup_pwd: '$2y$10$Ue08Fy9nGkyMT15vJJ4Ov.74Dn5ulzVoHv/pyXOJJCcnpgDiMRqC2'
+    pfa_encrypt: dovecot:SHA256
+    build_path: '{{ DEPLOY_HOME }}{{ BUILD_HOME }}/{{ pfa_container_name }}'

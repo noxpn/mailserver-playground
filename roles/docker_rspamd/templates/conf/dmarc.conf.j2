@@ -1,0 +1,13 @@
+reporting = true;
+servers = "{{redis_container_name}}:6379";
+password = "{{redis_pass}}";
+key_prefix = "dmarc_";
+actions = {
+  quarantine = "add_header";
+  reject = "reject";
+}
+report_settings {
+  org_name = "{{mail_domain}}";
+  domain = "{{mail_domain}}";
+  email = "postmaster@{{mail_domain}}";
+}

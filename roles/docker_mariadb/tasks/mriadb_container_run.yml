@@ -1,0 +1,29 @@
+- name: Run MariaDB container
+  docker_container:
+    name: '{{ postfix_db_host }}'
+    image: '{{ mysql_docker_image }}:{{ mysql_docker_image_tag }}'
+    restart_policy: always
+    state: started
+    env:
+      TZ: '{{ TZ }}'
+      MARIADB_ROOT_PASSWORD:  '{{ mysql_root_password }}'
+      MARIADB_DATABASE: '{{ postfix_db_name }}'
+      MARIADB_USER: '{{ postfix_db_user }}'
+      MARIADB_PASSWORD: '{{ postfix_db_pass }}'
+      MARIADB_INITDB_SKIP_TZINFO: '1'
+    volumes:
+      - '{{DEPLOY_HOME}}/database/mariadb/:/var/lib/mysql/'
+      # - '{{DEPLOY_HOME}}/run/mariadb/:/var/run/mysqld/'
+      - '{{DEPLOY_HOME}}/config/mariadb/:/etc/mysql/conf.d/:ro,Z'
+
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+
+    ports:
+      - "3306:3306"
+  register: mysql_container
+
+
+

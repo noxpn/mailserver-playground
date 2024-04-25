@@ -1,0 +1,27 @@
+TZ: "Asia/Krasnoyarsk"
+mysql_root_password: '8PnUsk&2hO8s7GO*s7gwqeo'
+postfix_db_name: "postfix"
+postfix_db_user: "postfix"
+postfix_db_pass: 'kSU82g(&*^eo92y3g256'
+postfix_db_priviliges: "ALL"
+postfix_db_host: mariadb
+
+DEPLOY_HOME: /home/mail
+BUILD_HOME: /build
+mail_dockernet_name: mail_net
+mail_dockernet_subnet: 172.20.20.0/24
+mail_dockernet_gateway: 172.20.20.1
+mail_dockernet_iprange: 172.20.20.0/26
+
+debian_tag: 12-slim
+mail_domain: noxp.press
+mail_host: mail
+mail_dir: /home/vmail
+
+dovecot_container_name: dovecot
+clamav_container_name: clamav
+rspamd_container_name: rspamd
+
+postmaster_email: postmaster@noxp.ru
+
+redis_pass: LKSI982t0*^&GF)W4

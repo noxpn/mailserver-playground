@@ -1,0 +1,2 @@
+- name: "run pma container"
+  import_tasks: pma_container_run.yml

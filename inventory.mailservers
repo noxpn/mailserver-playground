@@ -1,0 +1,4 @@
+mailservers:
+  hosts:
+    mail2:
+      ansible_host: xx.xx.xx.xx

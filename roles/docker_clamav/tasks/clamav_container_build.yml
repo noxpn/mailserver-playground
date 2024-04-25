@@ -1,0 +1,52 @@
+---
+- name: Create a build directory
+  become: True
+  ansible.builtin.file:
+    path: '{{ build_path }}'
+    state: directory
+    owner: ansible
+    mode: '0755'
+
+- name: Copy config files
+  copy:
+    src: 'conf'
+    dest: '{{ build_path }}'
+
+- name: Copy tmpl Dockerfile
+  template:
+    src: 'templates/Dockerfile.j2'
+    dest: '{{ build_path }}/Dockerfile'
+    mode: '0644'
+
+- name: Copy tmpl clamstpd.conf
+  template:
+    src: 'templates/clamsmtpd.conf.j2'
+    dest: '{{ build_path }}/conf/clamsmtpd.conf'
+    mode: '0644'
+
+- name: Copy tmpl virusAction
+  template:
+    src: 'templates/virusaction.sh.j2'
+    dest: '{{ build_path }}/conf/virusaction.sh'
+    mode: '0751'
+
+
+
+- name: Copy entrypoint files
+  copy:
+    src: 'docker-entrypoint.sh'
+    dest: '{{ build_path }}'
+
+- name: Build image and with build args
+  community.docker.docker_image:
+    name: '{{ clamav_custom_image }}'
+    build:
+      path: '{{ build_path }}'
+      dockerfile: Dockerfile
+      nocache: True
+      # args:
+      #   log_volume: /var/log/myapp
+      #   listen_port: 8080
+    source: build
+
+...

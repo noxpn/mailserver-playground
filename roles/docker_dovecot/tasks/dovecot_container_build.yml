@@ -1,0 +1,54 @@
+---
+- name: Create a build directory
+  become: True
+  ansible.builtin.file:
+    path: '{{ build_path }}'
+    state: directory
+    owner: ansible
+    mode: '0755'
+
+- name: Copy tmpl Dockerfile
+  template:
+    src: 'templates/Dockerfile.j2'
+    dest: '{{ build_path }}/Dockerfile'
+    mode: '0644'
+
+- name: Copy entrypoint files
+  copy:
+    src: 'docker-entrypoint.sh'
+    dest: '{{ build_path }}'
+
+- name: Copy config files
+  copy:
+    src: 'conf/'
+    dest: '{{ build_path }}/conf/'
+
+- name: Generate DH Parameters 
+  become: True
+  community.crypto.openssl_dhparam:
+    path: '{{DEPLOY_HOME}}/config/crt/{{dovecot_container_name}}-dh.pem'
+    size: 4096
+
+- name: Copy tmplated configs
+  become: True
+  template:
+    src:  '{{ item }}'
+    dest: "{{ build_path }}/conf/conf.d/{{ item | basename | regex_replace('\\.j2$', '') }}"
+  with_fileglob:
+    - ../templates/conf/conf.d/*.j2
+
+- name: Build image
+  community.docker.docker_image:
+    name: '{{ dovecot_custom_image }}'
+    build:
+      path: '{{ build_path }}'
+      dockerfile: Dockerfile
+      nocache: True
+    source: build
+
+
+
+
+...
+
+

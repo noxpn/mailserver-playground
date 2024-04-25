@@ -1,0 +1,17 @@
+TODO
+
+- roles/mariadb/templates/server.cnf.j2
+need to fix bind address conditions
+
+var shadowing fix
+
+export vo vars http ports
+
+postfix_containe - fix global permission on config dir | via become now
+see compat http://www.postfix.org/COMPATIBILITY_README.html
+
+vars to vault 
+
+
+/rspamd dkim
+/rspamadm dkim_keygen -b 2048 -s mail -k /var/lib/rspamd/dkim/mail.key | sudo tee -a  /var/lib/rspamd/dkim/mail.pub

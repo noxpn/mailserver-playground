@@ -1,0 +1,38 @@
+FROM debian:{{debian_tag}}
+
+ARG VERSION=local
+
+LABEL version=$VERSION
+LABEL org.opencontainers.image.authors="noxp"
+LABEL org.opencontainers.image.title="clamav-noxp"
+
+RUN apt-get update --quiet --quiet \
+    && apt-get upgrade --quiet --quiet
+
+RUN apt-get install -y --no-install-recommends \
+   	clamav \
+	clamav-unofficial-sigs \
+	clamsmtp \ 
+	ca-certificates \
+	wget
+
+RUN chown clamav:clamav /var/log/clamav \
+	&& chown clamav:clamav /var/lib/clamav \
+	&& install -d -o clamav -g clamav /var/run/clamav/ \
+	&& wget https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master/clamav-unofficial-sigs.sh -O /usr/local/sbin/clamav-unofficial-sigs.sh && chmod 755 /usr/local/sbin/clamav-unofficial-sigs.sh \
+	&& mkdir -p /etc/clamav-unofficial-sigs/ \
+	&& wget https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master/config/master.conf -O /etc/clamav-unofficial-sigs/master.conf \
+	&& wget https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master/config/user.conf -O /etc/clamav-unofficial-sigs/user.conf
+
+COPY conf/clamav-unofficial/ /etc/clamav-unofficial-sigs/
+COPY conf/freshclam/ /etc/clamav/
+COPY conf/clamsmtpd.conf /etc/
+COPY conf/virusaction.sh /etc/clamav/virusaction.sh
+COPY /docker-entrypoint.sh /docker-entrypoint.sh
+
+VOLUME ["/var/log/clamav", "/var/lib/clamav"]
+EXPOSE 10025:10025
+
+RUN ["chmod", "+x", "/docker-entrypoint.sh"]
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

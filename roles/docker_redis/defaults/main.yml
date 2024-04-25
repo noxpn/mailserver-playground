@@ -1,0 +1,3 @@
+redis_container_name: redis
+redis_docker_image: redis
+redis_docker_image_tag: 7.0-bookworm

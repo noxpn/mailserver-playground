@@ -1,0 +1,29 @@
+#!/bin/bash
+
+
+DKIM_FILE={{dkim_key_path}}/{{mail_domain}}.key
+PWD_FILE=/etc/rspamd/local.d/worker-controller.inc
+
+if [ -f "$DKIM_FILE" ]; then
+    echo "$DKIM_FILE DKIM key."
+    
+else 
+    echo "$DKIM_FILE DKIM key does not exist. making new one"
+    echo "insert it to dns:"
+    echo "---------------------"
+    rspamadm dkim_keygen -b 2048 -s mail -k {{dkim_key_path}}/{{mail_domain}}.key | tee -a  {{dkim_key_path}}/{{mail_domain}}.pub
+    echo "---------------------"
+    chown _rspamd:_rspamd {{dkim_key_path}}/*
+fi
+
+if [ -f "$PWD_FILE" ]; then
+    echo "$PWD_FILE got PWD file."
+    
+else 
+    echo "$PWD_FILE does not exist. making new one"
+    echo "bind_socket = {{rspamd_container_name}}:11334" >> $PWD_FILE
+    echo -n "password = " >> $PWD_FILE | rspamadm pw --encrypt -p $RSPAMD_PASSWORD >> $PWD_FILE
+fi
+
+# sleep 360000
+exec "$@"

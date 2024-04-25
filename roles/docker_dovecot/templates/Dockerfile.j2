@@ -1,0 +1,41 @@
+FROM dovecot/dovecot
+
+ARG VERSION=local
+
+LABEL version=$VERSION
+LABEL org.opencontainers.image.authors="noxp"
+LABEL org.opencontainers.image.title="dovecot-noxp"
+
+RUN apt-get update --quiet --quiet \
+    && apt-get upgrade --quiet --quiet
+
+# RUN apt-get install -y --no-install-recommends \
+# 	iputils-ping \ 
+# 	htop \
+# 	dnsutils \
+# 	less \
+# 	net-tools \
+# 	vim \
+# 	wget
+
+
+# COPY conf/conf.d/ /etc/dovecot/conf.d
+COPY conf/ /etc/dovecot/
+
+VOLUME ["/var/log/dovecot","{{mail_dir}}","/etc/dovecot/certs"]
+
+# EXPOSE 110:110
+# EXPOSE 143:143
+EXPOSE 993:993
+# EXPOSE 995:995
+EXPOSE 10031:10031
+
+
+COPY /docker-entrypoint.sh /docker-entrypoint.sh
+RUN ["chmod", "+x", "/docker-entrypoint.sh"]
+
+
+# ENTRYPOINT ["/usr/bin/tini", "--"]
+# CMD ["/usr/sbin/dovecot", "-F"]
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

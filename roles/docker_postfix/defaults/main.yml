@@ -1,0 +1,7 @@
+postfix_container_name: postfix
+postfix_custom_image: postfix-noxp
+build_path: '{{ DEPLOY_HOME }}{{ BUILD_HOME }}/{{ postfix_container_name }}'
+# clamav: '{{ clamav_container.container.Name | regex_replace("^/", "")}}'
+clamav_container_name: clamav
+# crt_path: /etc/postfix/certs
+crt_path: /etc/postfix/certs

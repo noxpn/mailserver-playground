@@ -1,0 +1,6 @@
+---
+- name: Attach containers network
+  docker_network:
+    name: postfix_net
+    connected: 
+      - '{{ mysql_container_name }}'

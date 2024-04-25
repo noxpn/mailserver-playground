@@ -1,0 +1,23 @@
+---
+- name: Run ClamAV container
+  docker_container:
+    name: '{{ clamav_container_name }}'
+    image: '{{ clamav_custom_image }}'
+    restart_policy: always
+    state: started
+    container_default_behavior: compatibility
+    env:
+      TZ: '{{TZ}}'
+    volumes:
+      - '{{ DEPLOY_HOME }}/database/clamav:/var/lib/clamav'
+      - '{{ DEPLOY_HOME }}/logs/clamav:/var/log/clamav'
+
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+
+    ports:
+      - "10025:10025"
+  register: clamav_container
+...

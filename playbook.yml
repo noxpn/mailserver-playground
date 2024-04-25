@@ -1,0 +1,19 @@
+---
+- hosts: mail2
+  remote_user: ansible
+  gather_facts: False
+  serial: 1
+  roles:
+    - role: debug
+    - role: docker_network
+    # - role: docker_certbot
+    - role: docker_mariadb
+    # - role: docker_postfixadmin
+    # - role: docker_php_my_admin
+    - role: docker_clamav
+    # - role: docker_portainer
+    - role: docker_postfix
+    - role: docker_dovecot
+    - role: docker_redis
+    - role: docker_rspamd
+...

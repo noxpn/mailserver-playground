@@ -1,0 +1,4 @@
+---
+- name: "Run container"
+  import_tasks: portainer_container_run.yml
+...

@@ -1,0 +1,7 @@
+---
+- name: "Build Clamav container"
+  import_tasks: clamav_container_build.yml
+      
+- name: "Run Clamav container"
+  import_tasks: clamav_container_run.yml
+...

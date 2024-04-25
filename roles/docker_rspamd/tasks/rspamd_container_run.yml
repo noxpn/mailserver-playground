@@ -1,0 +1,28 @@
+---
+- name: Run Rspamd container
+  docker_container:
+    name: '{{ rspamd_container_name }}'
+    image: '{{ rspamd_custom_image }}'
+    restart_policy: always
+    state: started
+    container_default_behavior: compatibility
+    env:
+      TZ: '{{TZ}}'
+      RSPAMD_PASSWORD: '{{rspamd_password}}'
+    volumes:
+      - '{{DEPLOY_HOME}}/logs/rspamd:/var/log/rspamd'
+      - '{{DEPLOY_HOME}}/config/crt/dkim:{{dkim_key_path}}'
+      - '{{DEPLOY_HOME}}/config/rspamd:/etc/rspamd/local.d'
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+    ports:
+      - "11332:11332"
+      - "8004:11334"
+  register: rspamd_container
+...
+
+
+
+

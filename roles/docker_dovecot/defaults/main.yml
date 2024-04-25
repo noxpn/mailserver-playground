@@ -1,0 +1,4 @@
+dovecot_container_name: dovecot
+dovecot_custom_image: dovecot-noxp
+build_path: '{{ DEPLOY_HOME }}{{ BUILD_HOME }}/{{ dovecot_container_name }}'
+crt_path: /etc/dovecot/certs

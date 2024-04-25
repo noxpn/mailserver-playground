@@ -1,0 +1,6 @@
+rspamd_container_name: rspamd
+rspamd_custom_image: rspamd-noxp
+build_path: '{{ DEPLOY_HOME }}{{ BUILD_HOME }}/{{ rspamd_container_name }}'
+rspamd_password: pwd1235444
+dkim_key_path: /var/lib/rspamd/dkim/self
+

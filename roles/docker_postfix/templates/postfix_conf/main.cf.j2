@@ -1,0 +1,142 @@
+
+compatibility_level = 3.6
+smtpd_banner = $myhostname ESMTP $mail_name (Debian/GNU)
+biff = no
+append_dot_mydomain = no
+readme_directory = no
+soft_bounce = yes
+
+disable_vrfy_command = yes
+smtpd_helo_required = yes
+smtp_always_send_ehlo = yes
+smtpd_delay_reject = yes
+smtpd_hard_error_limit = 1
+strict_rfc821_envelopes = yes
+maximal_queue_lifetime = 7d
+minimal_backoff_time = 180s
+maximal_backoff_time = 6h
+unverified_recipient_reject_code = 550
+smtpd_discard_ehlo_keywords = etrn, silent-discard
+smtpd_forbidden_commands = CONNECT GET POST
+
+##SASL
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_security_options = noanonymous
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = inet:{{dovecot_container_name}}:10031
+
+
+#TLS
+smtpd_use_tls=yes
+smtpd_tls_loglevel = 1
+
+#auth only tls connections, except mynetworks
+smtpd_tls_auth_only = yes
+smtpd_tls_security_level = may
+smtpd_tls_received_header = yes
+smtpd_tls_protocols = >=TLSv1.2, <=TLSv1.3
+#smtpd_tls_mandatory_protocols=!SSLv2,!SSLv3
+smtpd_tls_cert_file={{ crt_path }}/fullchain.pem
+smtpd_tls_key_file={{ crt_path }}/privkey.pem
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+
+smtp_use_tls=yes
+smtp_tls_loglevel = 1
+smtp_tls_security_level = may
+smtp_tls_note_starttls_offer = yes
+smtp_tls_cert_file={{ crt_path }}/fullchain.pem
+smtp_tls_key_file={{ crt_path }}/privkey.pem
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtp_tls_CApath=/etc/ssl/certs
+
+myhostname = {{mail_host}}.{{mail_domain}}
+alias_maps = 
+alias_database = 
+relayhost = 
+mydestination = $myhostname, localhost
+mynetworks = cidr:/etc/postfix/acl/acl_mynetworks.cidr
+mailbox_size_limit = 0
+message_size_limit = 50240000
+mailbox_command = procmail -a "$EXTENSION"
+recipient_delimiter = +
+inet_interfaces = all
+inet_protocols = ipv4
+
+virtual_minimum_uid = 3000
+virtual_uid_maps = static:3000
+virtual_gid_maps = static:8
+virtual_mailbox_base = {{ mail_dir }}
+virtual_mailbox_domains = mysql:/etc/postfix/mysql_virtual_mailbox_domains.cf
+virtual_mailbox_maps = mysql:/etc/postfix/mysql_virtual_mailbox_maps.cf
+virtual_alias_maps = mysql:/etc/postfix/mysql_virtual_alias_maps.cf
+relay_domains = mysql:/etc/postfix/mysql_relay_domains.cf
+
+#AV
+content_filter = scan:{{ clamav_container_name }}:10025
+receive_override_options = no_address_mappings
+
+#milter
+milter_protocol = 6
+milter_mail_macros = i {mail_addr} {client_addr} {client_name} {auth_authen}
+milter_default_action = accept
+smtpd_milters = inet:{{rspamd_container_name}}:11332
+non_smtpd_milters = inet:{{rspamd_container_name}}:11332
+
+debug_peer_level = 2
+maillog_file=/var/log/postfix/postfix.log
+
+#RESTRICTIONS
+
+#ETRN
+smtpd_etrn_restrictions = reject
+
+##CLIENT
+## Optional restrictions that the Postfix SMTP server applies in the context of a client connection request.
+smtpd_client_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    check_client_access hash:/etc/postfix/acl/acl_whitelist_client,
+    reject_unauth_pipelining,
+#   reject_rhsbl_client dnsbl.sorbs.net,
+#   reject_rhsbl_client xbl.spamhaus.org,
+    permit
+
+#HELO
+smtpd_helo_restrictions = 
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    check_helo_access hash:/etc/postfix/acl/acl_whitelist_helo,
+    reject_invalid_helo_hostname,
+    reject_non_fqdn_helo_hostname,
+    reject_unknown_helo_hostname,
+    permit
+
+#SENDER
+smtpd_sender_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    check_sender_access hash:/etc/postfix/acl/acl_whitelist_sender,
+    check_sender_access hash:/etc/postfix/acl/acl_spamlist,
+    reject_non_fqdn_sender,
+    reject_unknown_sender_domain,
+    permit
+
+#RELAY
+smtpd_relay_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    defer_unauth_destination,
+    permit
+
+#RECIPIENT 
+smtpd_recipient_restrictions =
+    permit_mynetworks,
+    permit_sasl_authenticated,
+    reject_unknown_recipient_domain,
+    reject_unlisted_recipient,
+    reject_non_fqdn_recipient,
+    reject_unauth_destination,
+    reject_unauth_pipelining,
+    reject_multi_recipient_bounce, 
+    reject_invalid_hostname,
+    permit

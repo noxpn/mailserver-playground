@@ -1,0 +1,11 @@
+---
+
+- name: "Build container"
+  import_tasks: pfa_container_build.yml
+
+- name: "Run container"
+  import_tasks: pfa_container_run.yml
+
+# - name: "Attach pfa_container to network"
+#   import_tasks: pfa_net_connect.yml
+...

@@ -1,0 +1,2 @@
+certbot_container_name: certbot
+certbot_docker_image: certbot/certbot

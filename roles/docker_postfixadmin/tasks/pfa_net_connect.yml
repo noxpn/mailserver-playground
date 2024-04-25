@@ -1,0 +1,6 @@
+---
+- name: Attach containers network
+  docker_network:
+    name: postfix_net
+    connected: 
+      - '{{ pfa_container_name }}'

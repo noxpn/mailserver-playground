@@ -1,0 +1,16 @@
+---
+- name: Create redis config dir
+  become: True
+  ansible.builtin.file:
+    path: '{{ DEPLOY_HOME }}/config/redis'
+    state: directory
+    mode: '0644'
+
+- name: Copy template config files
+  become: True
+  template:
+    src: 'templates/redis.conf.j2'
+    dest: '{{ DEPLOY_HOME }}/config/redis/redis.conf'
+...
+
+

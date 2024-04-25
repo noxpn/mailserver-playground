@@ -1,0 +1,3 @@
+clamav_custom_image: clamav-unoff-noxp
+clamav_container_name: clamav
+build_path: '{{ DEPLOY_HOME }}{{ BUILD_HOME }}/{{ clamav_container_name }}'

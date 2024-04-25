@@ -1,0 +1,27 @@
+---
+- name: Run Postfixadmin container
+  docker_container:
+    name: '{{ pfa_container_name }}'
+    image: '{{ pfa_custom_image }}'
+    restart_policy: always
+    state: started
+    env:
+      POSTFIXADMIN_DB_TYPE:         '{{ pfa_db_type }}'
+      POSTFIXADMIN_DB_HOST:         '{{ postfix_db_host }}'
+      POSTFIXADMIN_DB_USER:         '{{ postfix_db_user }}'
+      POSTFIXADMIN_DB_PASSWORD:     '{{ postfix_db_pass }}'
+      POSTFIXADMIN_DB_NAME:         '{{ postfix_db_name }}'
+      POSTFIXADMIN_SETUP_PASSWORD:  '{{ pfa_setup_pwd }}'
+      POSTFIXADMIN_ENCRYPT:         '{{ pfa_encrypt }}'
+    volumes:
+      - '{{ DEPLOY_HOME }}/config/dovecot/crt:/etc/dovecot/private'
+
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+
+    ports:
+      - "8002:80"
+  register: pfa_container
+...

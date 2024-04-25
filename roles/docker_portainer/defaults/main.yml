@@ -1,0 +1,3 @@
+port_container_name: portainer
+port_docker_image: portainer/portainer-ce
+port_docker_image_tag: latest

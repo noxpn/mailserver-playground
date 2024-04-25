@@ -1,0 +1,21 @@
+---
+- name: Run Php My Admin container
+  docker_container:
+    name: '{{ pma_container_name }}'
+    image: '{{pma_docker_image}}:{{pma_docker_image_tag}}'
+    restart_policy: always
+    state: started
+    env:
+      MYSQL_ROOT_PASSWORD:  '{{ mysql_root_password }}'
+      PMA_HOST:             '{{ postfix_db_host }}'
+
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+
+    ports:
+      - "8001:80"
+  register: pma_container
+...
+

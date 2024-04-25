@@ -1,0 +1,30 @@
+---
+- name: Run Redis container
+  docker_container:
+    name: '{{ redis_container_name }}'
+    image: '{{ redis_docker_image }}:{{ redis_docker_image_tag }}'
+    restart_policy: always
+    state: started
+    container_default_behavior: compatibility
+    command: redis-server /usr/local/etc/redis/redis.conf
+    env:
+      TZ: '{{TZ}}'
+    mounts:
+      - type: bind
+        source: '{{DEPLOY_HOME}}/config/redis/redis.conf'
+        target: '/usr/local/etc/redis/redis.conf'
+        read_only: True
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+    ports:
+      - "6379:6379"
+  register: redis_container
+
+...
+
+
+
+
+

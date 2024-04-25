@@ -1,0 +1,45 @@
+---
+- name: Create a build directory
+  become: True
+  ansible.builtin.file:
+    path: '{{ build_path }}/conf'
+    state: directory
+    owner: ansible
+    mode: '0755'
+
+- name: Copy tmpl Dockerfile
+  template:
+    src: 'templates/Dockerfile.j2'
+    dest: '{{ build_path }}/Dockerfile'
+    mode: '0644'
+
+- name: Copy entrypoint files
+  template:
+    src: 'templates/docker-entrypoint.sh.j2'
+    dest: '{{ build_path }}/docker-entrypoint.sh'
+
+- name: Copy config files
+  become: True
+  copy:
+    src: 'conf/'
+    dest: '{{ DEPLOY_HOME }}/config/rspamd'
+
+- name: Copy tmplated configs
+  become: True
+  template:
+    src:  '{{ item }}'
+    dest: "{{ DEPLOY_HOME }}/config/rspamd/{{ item | basename | regex_replace('\\.j2$', '') }}"
+  with_fileglob:
+    - ../templates/conf/*.j2
+
+- name: Build image
+  community.docker.docker_image:
+    name: '{{ rspamd_custom_image }}'
+    build:
+      path: '{{ build_path }}'
+      dockerfile: Dockerfile
+      nocache: True
+    source: build
+...
+
+

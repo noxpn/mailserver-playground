@@ -1,0 +1,10 @@
+---
+- name: '{{ mail_dockernet_name }}'
+  docker_network:
+    name: '{{ mail_dockernet_name }}'
+    enable_ipv6: no
+    driver: bridge
+    ipam_config:
+      - subnet:  '{{ mail_dockernet_subnet }}'
+        gateway: '{{ mail_dockernet_gateway }}'
+        iprange: '{{ mail_dockernet_iprange }}'

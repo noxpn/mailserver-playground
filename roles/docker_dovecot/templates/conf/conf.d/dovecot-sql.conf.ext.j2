@@ -1,0 +1,6 @@
+driver = mysql
+connect = host={{ postfix_db_host }} dbname={{ postfix_db_name }} user={{ postfix_db_user }} password={{ postfix_db_pass }}
+default_pass_scheme = SHA256
+user_query = SELECT '{{ mail_dir }}/%d/%n' as home, 3000 AS uid, 8 AS gid FROM mailbox WHERE username = '%u'
+password_query = SELECT password FROM mailbox WHERE username = '%u'
+

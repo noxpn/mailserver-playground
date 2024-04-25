@@ -1,0 +1,15 @@
+FROM {{ pfa_docker_image }}:{{pfa_docker_image_tag}} 
+
+ARG VERSION=local
+
+LABEL version=$VERSION
+LABEL org.opencontainers.image.authors="noxp"
+LABEL org.opencontainers.image.title="postfixadmin-noxp"
+
+RUN apt-get update --quiet --quiet \
+    && apt-get upgrade --quiet --quiet
+
+RUN apt-get install -y --no-install-recommends dovecot-core 
+
+VOLUME ["/etc/dovecot/private"]
+EXPOSE 8080:80

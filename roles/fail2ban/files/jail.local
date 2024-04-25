@@ -1,0 +1,34 @@
+[INCLUDES]
+before = paths-debian.conf
+
+[DEFAULT]
+bantime = 120m
+bantime.increment = true
+bantime.rndtime = 127
+
+findtime = 10m
+maxretry = 3
+
+destemail = root@localhost
+sender = root@<fq-hostname>
+mta = sendmail
+
+banaction = nftables-multiport
+banaction_allports = nftables-allports
+chain     = input
+
+action = %(action_)s
+
+[sshd]
+enabled = true
+
+
+[postfix-sasl]
+enabled	= true
+filter	= postfix-sasl
+port	= smtp,465,submission,imap,imaps,pop3,pop3s
+#action	= iptables[name=Postfix-sals, port=smtp, protocol=tcp]
+logpath	= /home/mail/logs/postfix/postfix.log
+bantime	= 60m
+maxretry = 3
+findtime = 60m

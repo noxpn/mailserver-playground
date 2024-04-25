@@ -1,0 +1,5 @@
+- name: "Build container"
+  import_tasks: dovecot_container_build.yml
+
+- name: "Run container"
+  import_tasks: dovecot_container_run.yml

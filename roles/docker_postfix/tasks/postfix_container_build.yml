@@ -1,0 +1,70 @@
+---
+- name: Create vmail directory
+  become: True
+  ansible.builtin.file:
+    path: '{{ DEPLOY_HOME }}/vmail'
+    state: directory
+    owner: 3000
+    group: 8
+    mode: '0755'
+
+- name: Create a build directory
+  become: True
+  ansible.builtin.file:
+    path: '{{ build_path }}/conf'
+    state: directory
+    owner: ansible
+    mode: '0755'
+
+- name: Copy tmpl Dockerfile
+  template:
+    src: 'templates/Dockerfile.j2'
+    dest: '{{ build_path }}/Dockerfile'
+    mode: '0644'
+
+- name: Copy entrypoint files
+  copy:
+    src: 'docker-entrypoint.sh'
+    dest: '{{ build_path }}'
+
+- name: Copy ACL config files
+  become: True
+  copy:
+    src: 'conf/'
+    dest: '{{ DEPLOY_HOME }}/config/postfix/'
+
+- name: Copy Tmpl ACL config files
+  become: True
+  template:
+    src: 'templates/postfix_acl/acl_mynetworks.cidr.j2'
+    dest: '{{ DEPLOY_HOME }}/config/postfix/acl_mynetworks.cidr'
+
+
+- name: Copy tmplated configs
+  become: True
+  template:
+    src:  '{{ item }}'
+    dest: "{{ build_path }}/conf/{{ item | basename | regex_replace('\\.j2$', '') }}"
+  with_fileglob:
+    - ../templates/postfix_conf/*.j2
+
+
+
+- name: Build image
+  community.docker.docker_image:
+    name: '{{ postfix_custom_image }}'
+    build:
+      path: '{{ build_path }}'
+      dockerfile: Dockerfile
+      nocache: True
+    source: build
+
+
+# - name: print var
+#   ansible.builtin.debug:
+#     msg:
+#     - cont {{ clamav_container.container.Name | regex_replace("^/", "")}}
+
+...
+
+

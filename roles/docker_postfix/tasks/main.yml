@@ -1,0 +1,5 @@
+- name: "Build container"
+  import_tasks: postfix_container_build.yml
+
+- name: "Run container"
+  import_tasks: postfix_container_run.yml

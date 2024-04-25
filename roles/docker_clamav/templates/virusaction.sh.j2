@@ -1,0 +1,4 @@
+#!/bin/bash
+LOGFILE=/var/log/clamav/virus.log
+echo "`date +%b' '%d' '%T` Virus: $VIRUS From: $SENDER To: $RECIPIENTS" >> $LOGFILE
+

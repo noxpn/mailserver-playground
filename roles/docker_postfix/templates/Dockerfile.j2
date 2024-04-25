@@ -1,0 +1,32 @@
+FROM debian:{{ debian_tag }}
+
+ARG VERSION=local
+
+LABEL version=$VERSION
+LABEL org.opencontainers.image.authors="noxp"
+LABEL org.opencontainers.image.title="postfix-noxp"
+
+RUN apt-get update --quiet --quiet \
+    && apt-get upgrade --quiet --quiet
+RUN apt-get install -y --no-install-recommends \
+   	postfix \
+	postfix-mysql \
+	postfix-pcre  \
+	procmail \ 
+	ca-certificates 
+	
+# RUN install -d -o 3000 -g 8 /home/vmail
+
+COPY conf/ /etc/postfix/
+
+VOLUME ["/var/log/postfix", "{{ mail_dir }}", "/etc/postfix/acl", "{{ crt_path }}"]
+
+EXPOSE 25:25
+EXPOSE 465:465
+EXPOSE 587:587
+EXPOSE 10026:10026
+
+COPY /docker-entrypoint.sh /docker-entrypoint.sh
+RUN ["chmod", "+x", "/docker-entrypoint.sh"]
+
+ENTRYPOINT ["/docker-entrypoint.sh"]

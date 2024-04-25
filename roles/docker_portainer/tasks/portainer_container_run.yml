@@ -1,0 +1,21 @@
+---
+- name: Run Portainer container
+  docker_container:
+    name: '{{ port_container_name }}'
+    image: '{{ port_docker_image }}:{{ port_docker_image_tag }}'
+    restart_policy: always
+    state: started
+    volumes:
+      - '{{ DEPLOY_HOME }}/database/portainer:/data'
+      - /var/run/docker.sock:/var/run/docker.sock
+ 
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+
+    ports:
+      - "8000:8000"
+      - "9443:9443"
+  register: portainer_container
+...

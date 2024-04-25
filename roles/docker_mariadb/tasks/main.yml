@@ -1,0 +1,7 @@
+---
+- name: "Install MariaDB container"
+  import_tasks: mriadb_container_run.yml
+
+# - name: "connect MariaDB container ti network"
+#   import_tasks: mariadb_net_connect.yml
+...

@@ -1,0 +1,16 @@
+classifier "bayes" {
+  backend = "redis";
+  servers = "{{redis_container_name}}:6379";
+  password = "{{redis_pass}}";
+  min_learns = 200;
+  statfile {
+    symbol = "BAYES_HAM";
+    spam = false;
+  }
+  statfile {
+    symbol = "BAYES_SPAM";
+    spam = true;
+  }
+  autolearn = true
+  per_user = true;
+}

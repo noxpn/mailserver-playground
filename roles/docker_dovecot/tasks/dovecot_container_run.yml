@@ -1,0 +1,43 @@
+---
+- name: Run Dovecot container
+  docker_container:
+    name: '{{ dovecot_container_name }}'
+    image: '{{ dovecot_custom_image }}'
+    restart_policy: always
+    state: started
+    container_default_behavior: compatibility
+    env:
+      TZ: '{{TZ}}'
+    volumes:
+      - '{{DEPLOY_HOME}}/vmail:{{ mail_dir }}'
+      - '{{DEPLOY_HOME}}/logs/dovecot:/var/log/dovecot'
+      # - '{{DEPLOY_HOME}}/config/postfix:/etc/postfix/acl'
+    #mount crt symlinks from host to file in container
+    mounts:
+      - type: bind
+        source: '{{DEPLOY_HOME}}/config/crt/live/{{mail_host}}.{{mail_domain}}/fullchain.pem'
+        target: '{{ crt_path }}/fullchain.pem'
+        read_only: True
+
+      - type: bind
+        source: '{{DEPLOY_HOME}}/config/crt/live/{{mail_host}}.{{mail_domain}}/privkey.pem'
+        target: '{{ crt_path }}/privkey.pem'
+        read_only: True
+
+      - type: bind
+        source: '{{DEPLOY_HOME}}/config/crt/{{dovecot_container_name}}-dh.pem'
+        target: '{{ crt_path }}/dh.pem'
+        read_only: True
+
+    network_mode: default
+    networks_cli_compatible: True
+    networks:
+      - name: '{{ mail_dockernet_name }}'
+    ports:
+      - 993:993
+  register: dovecot_container
+...
+
+
+
+

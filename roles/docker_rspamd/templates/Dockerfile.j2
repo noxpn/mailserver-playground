@@ -1,0 +1,32 @@
+FROM debian:{{debian_tag}}
+
+# ENV TZ="Asia/Krasnoyarsk"
+
+ARG VERSION=local
+
+LABEL version=$VERSION
+LABEL org.opencontainers.image.authors="noxp"
+LABEL org.opencontainers.image.title="clamav-noxp"
+
+RUN apt-get update --quiet --quiet \
+    && apt-get upgrade --quiet --quiet
+
+RUN apt-get install -y --no-install-recommends \
+	rspamd \
+	ca-certificates 
+
+	
+# COPY conf/ /etc/rspamd/local.d/
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN ["chmod", "+x", "/docker-entrypoint.sh"]
+
+VOLUME ["/var/log/rspamd", "{{dkim_key_path}}", "/etc/rspamd/local.d"]
+
+EXPOSE 11332:11332
+EXPOSE 8004:11334
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+CMD ["/usr/bin/rspamd", "-f", "-u", "_rspamd", "-g", "_rspamd", "-c", "/etc/rspamd/rspamd.conf" ]
+# CMD ["sleep", "36000"]

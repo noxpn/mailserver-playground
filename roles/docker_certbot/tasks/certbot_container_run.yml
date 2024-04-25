@@ -1,0 +1,13 @@
+- name: Run Certbot container
+  docker_container:
+    name: '{{ certbot_container_name }}'
+    image: '{{ certbot_docker_image }}'
+    restart_policy: no
+    state: started
+    command: 'certonly --standalone --agree-tos --register-unsafely-without-email -d {{mail_host}}.{{mail_domain}}'
+    volumes:
+      - '{{DEPLOY_HOME}}/config/crt/:/etc/letsencrypt'
+    network_mode: bridge
+    ports:
+      - "80:80"
+  register: certbot_container
